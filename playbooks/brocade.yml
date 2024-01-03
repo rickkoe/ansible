@@ -1,0 +1,17 @@
+---
+- hosts: switches
+  gather_facts: False
+  
+  vars:
+    fos_ip_addr: "10.18.254.37"
+    fos_password: "password"
+    fos_user: "admin"
+  tasks:
+  - name: display all available ports
+    m_display_port_availability: 
+      switch_ip: "{{fos_ip_addr}}" 
+      user: "{{fos_user}}" 
+      password: "{{fos_password}}" 
+      vfid: -1
+    register: result 
+  - debug: var=result

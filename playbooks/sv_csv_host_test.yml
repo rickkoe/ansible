@@ -1,0 +1,41 @@
+---
+- name: Test IBM Storage Virtualize Host Creation
+  hosts: localhost
+  collections:
+    ibm.storage_virtualize
+  gather_facts: no
+  vars:
+    - clustername: fs9200-cluster1.esilabs.com
+    - username: rkoetter
+    - password: ESI@2022bpic
+  connection: local
+  tasks:
+    - name: Read Host Details
+      read_csv:
+        path: output2.csv
+        skipinitialspace: true
+      delegate_to: localhost
+      register: host_list
+
+    - name: Fetch authorization token
+      register: auth
+      ibm_svc_auth:
+        clustername: "{{ clustername }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+
+    - name: Print Test
+      debug:
+        msg: "{{ item.Name }}"
+        msg: "{{ item.WWPNs }}"
+      loop: "{{ host_list.list }}"
+    
+    - name: create hosts
+      ibm_svc_host:
+        clustername: "{{ clustername }}"
+        token: "{{ auth.token }}"
+        name: "{{ item.Name }}"
+        fcwwpn: "{{ item.WWPNs }}"
+        state: present
+      loop: "{{ host_list.list }}"
+

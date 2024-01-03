@@ -1,0 +1,16 @@
+---
+- name: Test
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: Read users from CSV file and return a dictionary
+      read_csv:
+        path: users.csv
+      delegate_to: localhost
+      register: user_list
+
+    - name: Print test
+      debug:
+        msg: "{{ item.name }}"
+      loop: "{{ user_list.list }}"

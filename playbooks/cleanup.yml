@@ -1,0 +1,65 @@
+---
+- name: Cleanup IBM Storage Virtualize Volume Creation
+  hosts: localhost
+  collections:
+    ibm.storage_virtualize
+  gather_facts: no
+  vars:
+    - clustername: fs5200.esilabs.com
+    - username: rkoetter
+    - password: ESI@2022bpic
+    - pool: 2
+  connection: local
+  tasks:
+    - name: Read Volume Details
+      read_csv:
+        path: output6.csv
+        skipinitialspace: true
+      delegate_to: localhost
+      register: volume_list
+
+    - name: Read Host Details
+      read_csv:
+        path: output2.csv
+        skipinitialspace: true
+      delegate_to: localhost
+      register: host_list
+
+    - name: Fetch authorization token
+      register: auth
+      ibm_svc_auth:
+        clustername: "{{ clustername }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+
+    - name: Unmap Volumes
+      ibm.storage_virtualize.ibm_svc_vol_map:
+        clustername: "{{ clustername }}"
+        token: "{{ auth.token }}"
+        # log_path: /tmp/playbook.debug
+        volname: "{{ item.Name + '_' + item.Volumes }}"
+        host: "{{ item.Name }}"
+        scsi: 1
+        state: absent
+      loop: "{{ volume_list.list }}"
+
+    - name: Delete Volumes
+      ibm_svc_manage_volume:
+        clustername: "{{ clustername }}"
+        token: "{{ auth.token }}"
+        pool: "{{ pool }}"
+        name: "{{ item.Name + '_' + item.Volumes }}"
+        size: "{{ item.Size | int }}"
+        unit: "gb"
+        state: absent
+      loop: "{{ volume_list.list }}"
+
+    - name: Delete Hosts
+      ibm_svc_host:
+        clustername: "{{ clustername }}"
+        token: "{{ auth.token }}"
+        name: "{{ item.Name }}"
+        fcwwpn: "{{ item.WWPNs }}"
+        state: absent
+      loop: "{{ host_list.list }}"
+

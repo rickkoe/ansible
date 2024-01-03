@@ -1,0 +1,13 @@
+Name,Volumes,Size
+"e00p01-test2", "e00p01-test2-bootvol", "120"
+"e00p01-test2", "e00p01-test2-datavol1", "120"
+"e00p01-test2", "e00p01-test2-datavol2", "1024"
+"e00p01-test2", "e00p01-test2-datavol3", "2048"
+"e00p01-test3", "e00p01-test3-bootvol", "120"
+"e00p01-test3", "e00p01-test3-datavol1", "120"
+"e00p01-test3", "e00p01-test3-datavol2", "1024"
+"e00p01-test3", "e00p01-test3-datavol3", "2048"
+"e00p01-test4", "e00p01-test4-bootvol", "120"
+"e00p01-test4", "e00p01-test4-datavol1", "120"
+"e00p01-test4", "e00p01-test4-datavol2", "1024"
+"e00p01-test4", "e00p01-test4-datavol3", "2048"
