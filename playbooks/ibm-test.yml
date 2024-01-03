@@ -1,0 +1,12 @@
+---
+- name: Using the IBM Storage Virtualize collection
+  hosts: localhost
+  tasks:
+    - name: Gather info from storage
+      ibm.storage_virtualize.ibm_svc_info:
+        clustername: fs9200-cluster1.esilabs.com
+        domain:
+        username: skoetter
+        password: ESI@2022bpic
+        log_path: /tmp/playbook.debug
+        gather_subset: all

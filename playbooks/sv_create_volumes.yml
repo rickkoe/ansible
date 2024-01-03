@@ -1,0 +1,30 @@
+---
+- name: Test IBM Storage Virtualize Volume Creation
+  hosts: localhost
+  collections:
+    ibm.storage_virtualize
+  gather_facts: no
+  vars:
+    - clustername: fs9200-cluster1.esilabs.com
+    - username: rkoetter
+    - password: ESI@2022bpic
+    - pool: Pool0
+    - volname: Ansible_Test_vol
+  connection: local
+  tasks:
+    - name: Fetch authorization token
+      register: auth
+      ibm_svc_auth:
+        clustername: "{{clustername}}"
+        username: "{{username}}"
+        password: "{{password}}"
+    - name: create volume
+      ibm_svc_manage_volume:
+        clustername: "{{clustername}}"
+        token: "{{auth.token}}"
+        pool: "{{pool}}"
+        name: "{{volname}}"
+        size: 10
+        unit: "gb"
+        state: present
+
