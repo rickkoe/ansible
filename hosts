@@ -1,1 +1,5 @@
+[rhel]
 rick-ansible2.esilabs.com
+[flashsystem]
+fs9200-cluster1.esilabs.com
+fs5200.esilabs.com
