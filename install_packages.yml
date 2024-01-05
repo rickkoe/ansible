@@ -1,0 +1,13 @@
+---
+- name: This playbook installs packages
+  hosts: rhel
+  become: true
+  tasks:
+  - name: Install Package
+    yum:
+      name: git
+      state: installed
+  - name: Start httpd service
+    service:
+      name: httpd
+      start: started
