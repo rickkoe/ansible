@@ -1,49 +1,17 @@
 ---
-- name: Brocade Gather Facts
-  vars:
+- name: Create aliases
+  brocade_zoning_alias:
     credential:
       fos_ip_addr: 172.21.0.21
       fos_user_name: admin
       fos_password: abc123!!
       https: False
-
-  tasks:
-  - name: gather facts
-    brocade_facts:
-      credential: "{{ credential }}"
-      vfid: -1
-      gather_subset:
-        - brocade_access_gateway_port_group
-        - brocade_access_gateway_n_port_map
-        - brocade_access_gateway_f_port_list
-        - brocade_access_gateway_device_list
-        - brocade_access_gateway_policy
-        - brocade_access_gateway_n_port_settings
-        - brocade_zoning
-        - brocade_interface_fibrechannel
-        - brocade_chassis_chassis
-        - brocade_fibrechannel_configuration_fabric
-        - brocade_fibrechannel_configuration_port_configuration
-        - brocade_fibrechannel_switch
-        - brocade_time_clock_server
-        - brocade_time_time_zone
-        - brocade_logging_syslog_server
-        - brocade_logging_audit
-        - brocade_snmp_system
-        - brocade_security_ipfilter_rule
-        - brocade_security_ipfilter_policy
-        - brocade_security_user_config
-        - brocade_snmp_v1_account
-        - brocade_snmp_v1_trap
-        - brocade_snmp_v3_account
-        - brocade_snmp_v3_trap
-        - brocade_maps_maps_config
-        - brocade_security_sec_crypto_cfg_template_action
-        - brocade_security_sshutil_public_key
-        - brocade_security_ldap_role_map
-
-  - name: print ansible_facts gathered
-    debug:
-      var: ansible_facts
-
-
+    vfid: -1
+    aliases:
+      - name: Host1
+        members:
+          - aa:11:11:11:11:11:11:11
+          - aa:22:22:22:22:22:22:22
+      - name: Target2
+        members:
+          - aa:44:44:44:44:44:44:44
