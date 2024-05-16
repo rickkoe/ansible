@@ -20,6 +20,9 @@
     - name: Get volume information
       register: volume_list
       ibm_svc_info:
+        clustername: "{{ clustername }}"
+        domain: "{{ domain }}"
+        token: "{{ result.token }}"
         gather_subset: vol
     
     - name: Print
