@@ -20,7 +20,7 @@
     - name: Get volume information
       register: volume_list
       ibm_svc_info:
-      gather_subset: vol
+        gather_subset: vol
     
     - name: Print
       debug:
