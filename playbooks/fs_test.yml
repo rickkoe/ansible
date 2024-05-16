@@ -38,7 +38,7 @@
       debug:
         msg: "{{ item }}"
       loop:
-        hostmap_list.HostVdiskMap
+        "{{ hostmap_list.HostVdiskMap }}"
 
         # - name: Check if the volume is in a volume group
         #   ibm.storage_virtualize.svc_info_volume_group:
