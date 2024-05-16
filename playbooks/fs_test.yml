@@ -16,6 +16,7 @@
         domain: "{{domain}}"
         username: "{{username}}"
         password: "{{password}}"
+    
     - name: Get volume information
       register: volume_list
       ibm_svc_info:
@@ -23,7 +24,7 @@
     
     - name: Print
       debug:
-        msg: {{ volume_list }}
+        msg: "{{ volume_list }}"
       
     - name: Add volume to volume group
       ibm_svc_manage_volume:
