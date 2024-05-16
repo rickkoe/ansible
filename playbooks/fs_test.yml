@@ -36,7 +36,7 @@
     
     - name: Loop through each host map
       debug:
-        msg: "{{ item }}"
+        msg: "Host: {{ item.name }} Volume: {{ item.vdisk_name }}"
       loop:
         "{{ hostmap_list.HostVdiskMap }}"
 
