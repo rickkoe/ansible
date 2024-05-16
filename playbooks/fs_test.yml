@@ -41,6 +41,7 @@
         token: "{{ result.token }}"
         name: "{{ item.vdisk_name }}"
         volumegroup: "{{ item.name }}"
+        state: "present"
       loop:
         "{{ hostmap_list.HostVdiskMap }}"
 
