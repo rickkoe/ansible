@@ -1,7 +1,8 @@
 ---
 - name: Add volume to volume group
   hosts: localhost
-  vars: flashsystems
+  vars: 
+    - flashsystems
   tasks:
     - name: Add volume to volume group
       ibm.storage_virtualize.ibm_svc_manage_volume:
