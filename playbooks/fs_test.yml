@@ -14,6 +14,10 @@
         domain: "{{domain}}"
         username: "{{username}}"
         password: "{{password}}"
+    - name: Print results
+      debug:
+        msg: "{{ token }}"
+
     # - name: Add volume to volume group
     #   ibm.storage_virtualize.ibm_svc_manage_volume:
     #     clustername: "{{ clustername }}"
