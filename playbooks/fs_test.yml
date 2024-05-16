@@ -1,6 +1,6 @@
 ---
 - name: Add volume to volume group
-  hosts: localhost
+  hosts: fs5200.esilabs.com
   vars:
     clustername : fs5200
     domain : esilabs.com
