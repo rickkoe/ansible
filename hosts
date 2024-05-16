@@ -1,9 +1,9 @@
 [rhel]
 rick-ansible2.esilabs.com
-[flashsystem]
-ansible_connection=local
-clustername=fs5200
+
+[flashsystems]
+
+[flashsystems:vars]
 username=rkoetter
 password=ESI@2022bpic
-domain=esilabs.com
 
