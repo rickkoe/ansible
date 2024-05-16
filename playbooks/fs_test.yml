@@ -8,5 +8,5 @@
         domain:
         username: rkoetter
         password: ESI@2022bpic
-        log_path: /tmp/playbook.debug
+        log_path: ../logs/fs5200.log
         gather_subset: all
