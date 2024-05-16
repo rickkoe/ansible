@@ -35,6 +35,12 @@
         gather_subset: hostvdiskmap
     
     - name: Loop through each host map
+      ibm_svc_manage_volume:
+        clustername: "{{ clustername }}"
+        domain: "{{ domain }}"
+        token: "{{ result.token }}"
+        name: "{{ item.vdisk_name }}"
+        volumegroup: "{{ item.name }}"
       debug:
         msg: "Host: {{ item.name }} Volume: {{ item.vdisk_name }}"
       loop:
