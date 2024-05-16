@@ -3,6 +3,7 @@
   collections:
     - ibm.storage_virtualize
   hosts: localhost
+  gather_facts: no
   vars:
     clustername : fs5200
     domain : esilabs.com
@@ -33,15 +34,44 @@
         token: "{{ result.token }}"
         gather_subset: hostvdiskmap
     
-    - name: Print
-      debug:
-        msg: "{{ hostmap_list }}"
+    - name: Loop through each host map
+      ansible.builtin.loop:
+        list: "{{ hsostmap_list.HostVdiskMap }}"
+      loop_control:
+        loop_var: vdisk_name
+      when: vdisk_name is defined
+
+      tasks:
+        - name:  Debug
+          debug:
+            msg: "a"
+        # - name: Check if the volume is in a volume group
+        #   ibm.storage_virtualize.svc_info_volume_group:
+        #     array_hostname: "{{ ansible_host }}"
+        #     name: "{{ volume.name }}"
+        #   register: volume_group_info
+        #   ignore_errors: yes
+
+        # - name: Create volume group if not exists
+        #   when: volume_group_info.volume_group is not defined
+        #   ibm.storage_virtualize.svc_manage_volume_group:
+        #     array_hostname: "{{ ansible_host }}"
+        #     name: "{{ volume.mapping_to_host }}"
+        #     state: present
+
+        # - name: Add volume to volume group
+        #   when: volume_group_info.volume_group is not defined
+        #   ibm.storage_virtualize.svc_manage_volume_group:
+        #     array_hostname: "{{ ansible_host }}"
+        #     name: "{{ volume.mapping_to_host }}"
+        #     volume: "{{ volume.name }}"
+        #     state: present
       
-    - name: Add volume to volume group
-      ibm_svc_manage_volume:
-        clustername: "{{ clustername }}"
-        domain: "{{ domain }}"
-        token: "{{ result.token }}"
-        name: my_volume
-        volumegroup: my_volume_group
-        state: "present"
+    # - name: Add volume to volume group
+    #   ibm_svc_manage_volume:
+    #     clustername: "{{ clustername }}"
+    #     domain: "{{ domain }}"
+    #     token: "{{ result.token }}"
+    #     name: my_volume
+    #     volumegroup: my_volume_group
+    #     state: "present"
