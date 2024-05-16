@@ -1,8 +1,11 @@
 ---
 - name: Add volume to volume group
   hosts: localhost
-  vars: 
-    - flashsystems
+  vars:
+    clustername : fs5200
+    domain : esilabs
+    username : rkoetter
+    password : ESI@2022bpic
   tasks:
     - name: Add volume to volume group
       ibm.storage_virtualize.ibm_svc_manage_volume:

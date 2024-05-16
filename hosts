@@ -4,9 +4,5 @@ rick-ansible2.esilabs.com
 [flashsystems]
 fs5200.esilabs.com
 
-[flashsystems:vars]
-clustername: fs5200
-domain: esilabs
-username: rkoetter
-password: ESI@2022bpic
+
 
