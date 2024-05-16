@@ -7,12 +7,19 @@
     username : rkoetter
     password : ESI@2022bpic
   tasks:
-    - name: Add volume to volume group
-      ibm.storage_virtualize.ibm_svc_manage_volume:
-        clustername: "{{ clustername }}"
-        domain: "{{ domain }}"
-        username: "{{ username }}"
-        password: "{{ password }}"
-        name: my_volume
-        volumegroup: my_volume_group
-        state: "present"
+    - name: Obtain an authentication token
+      register: result
+      ibm.storage_virtualize.ibm_svc_auth:
+        clustername: "{{clustername}}"
+        domain: "{{domain}}"
+        username: "{{username}}"
+        password: "{{password}}"
+    # - name: Add volume to volume group
+    #   ibm.storage_virtualize.ibm_svc_manage_volume:
+    #     clustername: "{{ clustername }}"
+    #     domain: "{{ domain }}"
+    #     username: "{{ username }}"
+    #     password: "{{ password }}"
+    #     name: my_volume
+    #     volumegroup: my_volume_group
+    #     state: "present"
