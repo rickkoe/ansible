@@ -24,10 +24,18 @@
         domain: "{{ domain }}"
         token: "{{ result.token }}"
         gather_subset: vol
+
+    - name: Get host information
+      register: hostmap_list
+      ibm_svc_info:
+        clustername: "{{ clustername }}"
+        domain: "{{ domain }}"
+        token: "{{ result.token }}"
+        gather_subset: hostvdiskmap
     
     - name: Print
       debug:
-        msg: "{{ volume_list }}"
+        msg: "{{ hostmap_list }}"
       
     - name: Add volume to volume group
       ibm_svc_manage_volume:
