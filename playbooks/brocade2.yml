@@ -1,0 +1,16 @@
+---
+- name: Gather Brocade Switch Facts
+  hosts: brocade_switches
+  collections:
+    - brocade.fos
+  tasks:
+    - name: Gather Fabric Facts
+      brocade.fos.brocade_fabric_facts:
+        fabric_login: admin
+        fabric_password: abc123!!
+        switch: "{{ inventory_hostname }}"
+      register: fabric_facts
+
+    - name: Display Fabric Facts
+      debug:
+        var: fabric_facts

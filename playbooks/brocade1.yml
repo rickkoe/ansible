@@ -1,0 +1,15 @@
+- name: Get Effective Zone Configuration
+  hosts: fabric_a
+  collections:
+    - brocade.fos
+  tasks:
+    - name: Retrieve Effective Zone Configuration
+      brocade.fos.brocade_zone_effective_configuration:
+        fabric_login: admin
+        fabric_password: abc123!!
+        switch: "{{ inventory_hostname }}"
+      register: effective_zone_config
+
+    - name: Display Effective Zone Configuration
+      debug:
+        var: effective_zone_config
