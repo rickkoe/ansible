@@ -1,5 +1,7 @@
 ---
 - name: Add volume to volume group
+  collections:
+    - ibm.storage_virtualize
   hosts: localhost
   vars:
     clustername : fs5200
@@ -9,15 +11,22 @@
   tasks:
     - name: Obtain an authentication token
       register: result
-      ibm.storage_virtualize.ibm_svc_auth:
+      ibm_svc_auth:
         clustername: "{{clustername}}"
         domain: "{{domain}}"
         username: "{{username}}"
         password: "{{password}}"
-
-
+    - name: Get volume information
+      register: volume_list
+      ibm_svc_info:
+      gather_subset: vol
+    
+    - name: Print
+      debug:
+        msg: {{ volume_list }}
+      
     - name: Add volume to volume group
-      ibm.storage_virtualize.ibm_svc_manage_volume:
+      ibm_svc_manage_volume:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
         token: "{{ result.token }}"
