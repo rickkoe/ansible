@@ -1,0 +1,17 @@
+---
+  - name: Create volume group
+    ibm_svc_manage_volumegroup:
+      clustername: "{{ clustername }}"
+      domain: "{{ domain }}"
+      token: "{{ result.token }}"
+      name: "{{ host.name }}"
+      state: "present"
+      
+  - name: Add volume to volume group
+    ibm_svc_manage_volume:
+      clustername: "{{ clustername }}"
+      domain: "{{ domain }}"
+      token: "{{ result.token }}"
+      name: "{{ host.vdisk_name }}"
+      volumegroup: "{{ host.name }}"
+      state: "present"

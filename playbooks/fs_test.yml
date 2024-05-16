@@ -35,13 +35,7 @@
         gather_subset: hostvdiskmap
     
     - name: Loop through each host map and add to volume group
-      ibm_svc_manage_volume:
-        clustername: "{{ clustername }}"
-        domain: "{{ domain }}"
-        token: "{{ result.token }}"
-        name: "{{ host.vdisk_name }}"
-        volumegroup: "{{ host.name }}"
-        state: "present"
+      include_tasks: fs_create_add_vols_volgrp.yml
       loop:
         "{{ hostmap_list.HostVdiskMap }}"
       loop_control:
