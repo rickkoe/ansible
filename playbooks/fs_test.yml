@@ -4,10 +4,10 @@
   tasks:
     - name: Add volume to volume group
       ibm.storage_virtualize.ibm_svc_manage_volume:
-        clustername: {{ clustername }}
-        domain: {{ domain }}
-        username: {{ username }}
-        password: {{ password }}
+        clustername: "{{ clustername }}"
+        domain: "{{ domain }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
         name: my_volume
         volumegroup: my_volume_group
         state: "present"
