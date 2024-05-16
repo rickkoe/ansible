@@ -35,16 +35,11 @@
         gather_subset: hostvdiskmap
     
     - name: Loop through each host map
-      ansible.builtin.loop:
-        list: "{{ hsostmap_list.HostVdiskMap }}"
-      loop_control:
-        loop_var: vdisk_name
-      when: vdisk_name is defined
+      debug:
+        msg: "{{ item }}"
+      loop:
+        hostmap_list.HostVdiskMap
 
-      tasks:
-        - name:  Debug
-          debug:
-            msg: "a"
         # - name: Check if the volume is in a volume group
         #   ibm.storage_virtualize.svc_info_volume_group:
         #     array_hostname: "{{ ansible_host }}"
