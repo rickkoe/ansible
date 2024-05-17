@@ -5,19 +5,19 @@
   hosts: localhost
   gather_facts: no
   vars:
-    clustername : fs5200
-    domain : esilabs.com
-    username : rkoetter
+    clustername: fs5200
+    domain: esilabs.com
+    username: rkoetter
     password: ESI@2022bpic
   tasks:
     - name: Obtain an authentication token
       register: auth
       ibm_svc_auth:
-        clustername: "{{clustername}}"
-        domain: "{{domain}}"
-        username: "{{username}}"
-        password: "{{password}}"
-    
+        clustername: "{{ clustername }}"
+        domain: "{{ domain }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+
     - name: Get volume information
       register: volume_list
       ibm_svc_info:
@@ -33,10 +33,9 @@
         domain: "{{ domain }}"
         token: "{{ auth.token }}"
         gather_subset: hostvdiskmap
-    
+
     - name: Loop through each host map and add to volume group
       include_tasks: fs_create_add_vols_volgrp.yml
-      loop:
-        "{{ hostmap_list.HostVdiskMap }}"
+      loop: "{{ hostmap_list.HostVdiskMap }}"
       loop_control:
         loop_var: host
