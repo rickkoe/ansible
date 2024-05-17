@@ -8,16 +8,10 @@
     clustername : fs5200
     domain : esilabs.com
     username : rkoetter
-    password: !vault |
-              $ANSIBLE_VAULT;1.1;AES256
-              33373736656562336531353231623538303533356139396532353437393738343066333733316166
-              3936313866303765616533626230383239343636323465340a383236646336636338623736623136
-              31653261636133363836393931343736623365346331383835616465316136323162306137323066
-              3931336637353464620a613030653832613639346631663232373965346635663164643338303632
-              3137
+    password: ESI@2022bpic
   tasks:
     - name: Obtain an authentication token
-      register: result
+      register: auth
       ibm_svc_auth:
         clustername: "{{clustername}}"
         domain: "{{domain}}"
@@ -29,7 +23,7 @@
       ibm_svc_info:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
-        token: "{{ result.token }}"
+        token: "{{ auth.token }}"
         gather_subset: vol
 
     - name: Get host information
@@ -37,7 +31,7 @@
       ibm_svc_info:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
-        token: "{{ result.token }}"
+        token: "{{ auth.token }}"
         gather_subset: hostvdiskmap
     
     - name: Loop through each host map and add to volume group
