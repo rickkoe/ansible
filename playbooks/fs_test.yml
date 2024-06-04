@@ -9,33 +9,102 @@
     domain: esilabs.com
     username: rkoetter
     password: ESI@2022bpic
+
   tasks:
     - name: Obtain an authentication token
-      register: auth
       ibm_svc_auth:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
         username: "{{ username }}"
         password: "{{ password }}"
+      register: auth
 
     - name: Get volume information
-      register: volume_list
       ibm_svc_info:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
         token: "{{ auth.token }}"
         gather_subset: vol
+      register: volume_list
+
+    # Uncomment the debug task for troubleshooting
+    # - name: Debug volume list
+    #   debug:
+    #     var: volume_list
 
     - name: Get host information
-      register: hostmap_list
       ibm_svc_info:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
         token: "{{ auth.token }}"
         gather_subset: hostvdiskmap
+      register: hostmap_list
 
-    - name: Loop through each host map and add to volume group
-      include_tasks: fs_create_add_vols_volgrp.yml
-      loop: "{{ hostmap_list.HostVdiskMap }}"
-      loop_control:
-        loop_var: host
+    # Uncomment the debug task for troubleshooting
+    # - name: Debug host map list
+    #   debug:
+    #     var: hostmap_list
+
+    - name: Select entries not in a volume group
+      set_fact:
+        volume_list_nogroup: "{{ volume_list.Volume | selectattr('volume_group_name', 'equalto', '') | list }}"
+
+    # Uncomment the debug task to print the list
+    # - name: Print List
+    #   debug:
+    #     var: volume_list_nogroup
+
+    - name: Find volumes not in volume group that are mapped to a host
+      set_fact:
+        volumes_nogroup_mapped_to_host: >-
+          {{
+            volume_list_nogroup |
+            selectattr('volume_id', 'in', hostmap_list.HostVdiskMap | map(attribute='vdisk_id') | list) |
+            list
+          }}
+
+    - name: Create volume to host map list
+      set_fact:
+        volume_host_map: >-
+          {{
+            dict(
+              hostmap_list.HostVdiskMap |
+              map(attribute='vdisk_id') |
+              zip(
+                hostmap_list.HostVdiskMap |
+                map(attribute='name')
+              )
+            )
+          }}
+
+    # Uncomment the debug task to see the volume to host map
+    # - name: Debug volume to host map
+    #   debug:
+    #     var: volume_host_map
+
+    - name: Create Volume Groups if they don't exist
+      ibm_svc_manage_volumegroup:
+        clustername: "{{ clustername }}"
+        domain: "{{ domain }}"
+        token: "{{ auth.token }}"
+        name: "{{ volume_host_map[item.volume_id] }}"
+        state: present
+      loop: "{{ volumes_nogroup_mapped_to_host }}"
+      when: volume_host_map[item.volume_id] is defined
+
+
+    - name: Add each volume to the corresponding volume group
+      ibm_svc_manage_volume:
+        clustername: "{{ clustername }}"
+        domain: "{{ domain }}"
+        token: "{{ auth.token }}"
+        name: "{{ item.volume_name }}"
+        volumegroup: "{{ volume_host_map[item.volume_id] }}"
+        state: present
+      loop: "{{ volumes_nogroup_mapped_to_host }}"
+      when: volume_host_map[item.volume_id] is defined
+
+    # Uncomment the debug task to see the results
+    # - name: Debug volumes with host information
+    #   debug:
+    #     var: volumes_nogroup_mapped_to_host

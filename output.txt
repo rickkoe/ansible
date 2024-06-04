@@ -1,0 +1,28 @@
+
+PLAY [Add volume to volume group] **********************************************
+
+TASK [Obtain an authentication token] ******************************************
+ok: [localhost]
+
+TASK [Get volume information] **************************************************
+ok: [localhost]
+
+TASK [Get host information] ****************************************************
+ok: [localhost]
+
+TASK [Filter host maps with volume group entry] ********************************
+skipping: [localhost] => (item={'id': '0', 'name': 'rick-w2019', 'SCSI_id': '0', 'vdisk_id': '0', 'vdisk_name': 'rick-w2019_001', 'vdisk_UID': '600507681281017DF80000000000526A', 'IO_group_id': '0', 'IO_group_name': 'io_grp0', 'mapping_type': 'private', 'host_cluster_id': '', 'host_cluster_name': '', 'protocol': 'scsi'}) 
+skipping: [localhost] => (item={'id': '0', 'name': 'rick-w2019', 'SCSI_id': '1', 'vdisk_id': '7', 'vdisk_name': 'test_0', 'vdisk_UID': '600507681281017DF8000000000056D8', 'IO_group_id': '0', 'IO_group_name': 'io_grp0', 'mapping_type': 'private', 'host_cluster_id': '', 'host_cluster_name': '', 'protocol': 'scsi'}) 
+skipping: [localhost] => (item={'id': '0', 'name': 'rick-w2019', 'SCSI_id': '2', 'vdisk_id': '8', 'vdisk_name': 'test_1', 'vdisk_UID': '600507681281017DF8000000000056D9', 'IO_group_id': '0', 'IO_group_name': 'io_grp0', 'mapping_type': 'private', 'host_cluster_id': '', 'host_cluster_name': '', 'protocol': 'scsi'}) 
+skipping: [localhost] => (item={'id': '0', 'name': 'rick-w2019', 'SCSI_id': '3', 'vdisk_id': '9', 'vdisk_name': 'test_2', 'vdisk_UID': '600507681281017DF8000000000056DA', 'IO_group_id': '0', 'IO_group_name': 'io_grp0', 'mapping_type': 'private', 'host_cluster_id': '', 'host_cluster_name': '', 'protocol': 'scsi'}) 
+skipping: [localhost] => (item={'id': '0', 'name': 'rick-w2019', 'SCSI_id': '4', 'vdisk_id': '10', 'vdisk_name': 'test_3', 'vdisk_UID': '600507681281017DF8000000000056DB', 'IO_group_id': '0', 'IO_group_name': 'io_grp0', 'mapping_type': 'private', 'host_cluster_id': '', 'host_cluster_name': '', 'protocol': 'scsi'}) 
+skipping: [localhost] => (item={'id': '0', 'name': 'rick-w2019', 'SCSI_id': '5', 'vdisk_id': '11', 'vdisk_name': 'test_4', 'vdisk_UID': '600507681281017DF8000000000056DC', 'IO_group_id': '0', 'IO_group_name': 'io_grp0', 'mapping_type': 'private', 'host_cluster_id': '', 'host_cluster_name': '', 'protocol': 'scsi'}) 
+skipping: [localhost] => (item={'id': '0', 'name': 'rick-w2019', 'SCSI_id': '6', 'vdisk_id': '12', 'vdisk_name': 'test_5', 'vdisk_UID': '600507681281017DF8000000000056DD', 'IO_group_id': '0', 'IO_group_name': 'io_grp0', 'mapping_type': 'private', 'host_cluster_id': '', 'host_cluster_name': '', 'protocol': 'scsi'}) 
+skipping: [localhost]
+
+TASK [Loop through each filtered host map and add to volume group] *************
+skipping: [localhost]
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+

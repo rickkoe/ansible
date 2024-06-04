@@ -1,0 +1,67 @@
+        # volume_list.Volume
+        
+        "VdiskCopy": [],
+        "VdiskHostMap": [],
+        "Volume": [
+            {
+                "FC_id": "",
+                "FC_name": "",
+                "IO_group_id": "0",
+                "IO_group_name": "io_grp0",
+                "RC_change": "no",
+                "RC_id": "",
+                "RC_name": "",
+                "capacity": "500.00GB",
+                "compressed_copy_count": "0",
+                "copy_count": "1",
+                "encrypt": "yes",
+                "fast_write_state": "empty",
+                "fc_map_count": "0",
+                "formatting": "no",
+                "function": "",
+                "id": "0",
+                "is_safeguarded_snapshot": "no",
+                "is_snapshot": "no",
+                "mdisk_grp_id": "0",
+                "mdisk_grp_name": "ELRLFS02_p0",
+                "name": "rick-w2019_001",
+                "owner_id": "",
+                "owner_name": "",
+                "parent_mdisk_grp_id": "0",
+                "parent_mdisk_grp_name": "ELRLFS02_p0",
+                "protocol": "scsi",
+                "replication_mode": "",
+                "restore_in_progress": "no",
+                "safeguarded_snapshot_count": "0",
+                "se_copy_count": "1",
+                "snapshot_count": "0",
+                "status": "online",
+                "type": "striped",
+                "vdisk_UID": "600507681281017DF80000000000526A",
+                "volume_group_id": "1",
+                "volume_group_name": "oldy",
+                "volume_id": "0",
+                "volume_name": "rick-w2019_001",
+                "volume_type": ""
+            },
+
+
+
+# host_list.HostVdiskMap
+
+ok: [localhost] => {
+    "msg": [
+        {
+            "IO_group_id": "0",
+            "IO_group_name": "io_grp0",
+            "SCSI_id": "0",
+            "host_cluster_id": "",
+            "host_cluster_name": "",
+            "id": "0",
+            "mapping_type": "private",
+            "name": "rick-w2019",
+            "protocol": "scsi",
+            "vdisk_UID": "600507681281017DF80000000000526A",
+            "vdisk_id": "0",
+            "vdisk_name": "rick-w2019_001"
+        },
