@@ -4,10 +4,12 @@
     - ibm.storage_virtualize
   hosts: localhost
   gather_facts: no
+  # vars_files:
+  #   - vault.yml
   vars:
     clustername: fs5200
     domain: esilabs.com
-    username: rkoetter
+    username: rkoetter 
     password: ESI@2022bpic
 
   tasks:
@@ -19,7 +21,7 @@
         password: "{{ password }}"
       register: auth
 
-    - name: Get volume information
+    - name: Create a list of all volumes
       ibm_svc_info:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
@@ -27,62 +29,68 @@
         gather_subset: vol
       register: volume_list
 
-    # Uncomment the debug task for troubleshooting
-    # - name: Debug volume list
-    #   debug:
-    #     var: volume_list
-
-    - name: Get host information
+    - name: Create a list of all host mappings
       ibm_svc_info:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
         token: "{{ auth.token }}"
         gather_subset: hostvdiskmap
-      register: hostmap_list
+      register: all_hostmaps
 
-    # Uncomment the debug task for troubleshooting
-    # - name: Debug host map list
-    #   debug:
-    #     var: hostmap_list
+    - name: Filter host mappings with mapping_type private
+      set_fact:
+        private_hostmap_list: "{{ all_hostmaps.HostVdiskMap | selectattr('mapping_type', 'equalto', 'private') | list }}"
 
-    - name: Select entries not in a volume group
+    - name: Filter host mappings with mapping_type private
+      set_fact:
+        shared_hostmap_list: "{{ all_hostmaps.HostVdiskMap | selectattr('mapping_type', 'equalto', 'shared') | list }}"
+
+
+    - name: Create a list of volumes that are not in a volume group
       set_fact:
         volume_list_nogroup: "{{ volume_list.Volume | selectattr('volume_group_name', 'equalto', '') | list }}"
 
-    # Uncomment the debug task to print the list
-    # - name: Print List
-    #   debug:
-    #     var: volume_list_nogroup
-
-    - name: Find volumes not in volume group that are mapped to a host
+    - name: Create a list of volumes that are not in a volume group but are mapped to a host
       set_fact:
         volumes_nogroup_mapped_to_host: >-
           {{
             volume_list_nogroup |
-            selectattr('volume_id', 'in', hostmap_list.HostVdiskMap | map(attribute='vdisk_id') | list) |
+            selectattr('volume_id', 'in', private_hostmap_list | map(attribute='vdisk_id') | list) |
             list
           }}
 
-    - name: Create volume to host map list
+    - name: Create a list of volumes that are not in a volume group but are mapped to a host cluster
+      set_fact:
+        volumes_nogroup_mapped_to_host_cluster: >-
+          {{
+            volume_list_nogroup |
+            selectattr('volume_id', 'in', shared_hostmap_list | map(attribute='vdisk_id') | list) |
+            list
+          }}
+    - name: private_hostmap_list
+      debug:
+        var: private_hostmap_list
+    - name: shared_hostmap_list
+      debug:
+        var: shared_hostmap_list
+
+
+    - name: Create volume to host map dictionary
       set_fact:
         volume_host_map: >-
           {{
             dict(
-              hostmap_list.HostVdiskMap |
-              map(attribute='vdisk_id') |
-              zip(
-                hostmap_list.HostVdiskMap |
-                map(attribute='name')
-              )
+              (private_hostmap_list | map(attribute='vdisk_id') | zip(private_hostmap_list | map(attribute='name'))) +
+              (shared_hostmap_list | map(attribute='vdisk_id') | zip(shared_hostmap_list | map(attribute='host_cluster_name')))
             )
           }}
 
-    # Uncomment the debug task to see the volume to host map
-    # - name: Debug volume to host map
-    #   debug:
-    #     var: volume_host_map
 
-    - name: Create Volume Groups if they don't exist
+    - name: volume_host_map
+      debug:
+        var: volume_host_map
+
+    - name: Tell FlashSystem to create required volume groups if they don't exist
       ibm_svc_manage_volumegroup:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
@@ -92,8 +100,7 @@
       loop: "{{ volumes_nogroup_mapped_to_host }}"
       when: volume_host_map[item.volume_id] is defined
 
-
-    - name: Add each volume to the corresponding volume group
+    - name: Tell FlashSystem to add each volume to the corresponding volume group
       ibm_svc_manage_volume:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
@@ -103,8 +110,3 @@
         state: present
       loop: "{{ volumes_nogroup_mapped_to_host }}"
       when: volume_host_map[item.volume_id] is defined
-
-    # Uncomment the debug task to see the results
-    # - name: Debug volumes with host information
-    #   debug:
-    #     var: volumes_nogroup_mapped_to_host
