@@ -4,13 +4,13 @@
     - ibm.storage_virtualize
   hosts: localhost
   gather_facts: no
-  # vars_files:
-  #   - vault.yml
+  vars_files:
+    - vault.yml
   vars:
-    clustername: fs9200
+    clustername: fs5200
     domain: esilabs.com
-    username: rkoetter 
-    password: ESI@2022bpic
+    username: "{{ vault_username }}"
+    password: "{{ vault_password }}"
 
   tasks:
     - name: Obtain an authentication token
@@ -37,18 +37,21 @@
         gather_subset: hostvdiskmap
       register: all_hostmaps
 
-    - name: Filter host mappings with mapping_type private
-      set_fact:
-        private_hostmap_list: "{{ all_hostmaps.HostVdiskMap | selectattr('mapping_type', 'equalto', 'private') | list }}"
-
-    - name: Filter host mappings with mapping_type private
-      set_fact:
-        shared_hostmap_list: "{{ all_hostmaps.HostVdiskMap | selectattr('mapping_type', 'equalto', 'shared') | list }}"
-
-
     - name: Create a list of volumes that are not in a volume group
       set_fact:
         volume_list_nogroup: "{{ volume_list.Volume | selectattr('volume_group_name', 'equalto', '') | list }}"
+    
+    - name: Create a list of volume IDs that are not in a volume group
+      set_fact:
+        volume_ids_nogroup: "{{ volume_list_nogroup | map(attribute='id') | list }}"
+
+    - name: Filter host mappings with mapping_type private and volumes in volume_list_nogroup
+      set_fact:
+        private_hostmap_list: "{{ all_hostmaps.HostVdiskMap | selectattr('mapping_type', 'equalto', 'private') | selectattr('vdisk_id', 'in', volume_ids_nogroup) | list }}"
+
+    - name: Filter host mappings with mapping_type shared and volumes in volume_list_nogroup
+      set_fact:
+        shared_hostmap_list: "{{ all_hostmaps.HostVdiskMap | selectattr('mapping_type', 'equalto', 'shared') | selectattr('vdisk_id', 'in', volume_ids_nogroup) | list }}"
 
     - name: Create a list of volumes that are not in a volume group but are mapped to a host
       set_fact:
@@ -78,18 +81,14 @@
             )
           }}
 
-    - name: volume_host_map
-      debug:
-        var: volume_host_map
-
     - name: Tell FlashSystem to create required volume groups if they don't exist
       ibm_svc_manage_volumegroup:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
         token: "{{ auth.token }}"
-        name: "{{ item.value }}"
+        name: "{{ item }}"
         state: present
-      loop: "{{ volume_host_map | dict2items }}"
+      loop: "{{ volume_host_map.values() | unique }}"
 
     - name: Tell FlashSystem to add each volume to the corresponding volume group
       ibm_svc_manage_volume:
