@@ -55,7 +55,7 @@
         volumes_nogroup_mapped_to_host: >-
           {{
             volume_list_nogroup |
-            selectattr('volume_id', 'in', private_hostmap_list | map(attribute='vdisk_id') | list) |
+            selectattr('volume_name', 'in', private_hostmap_list | map(attribute='vdisk_name') | list) |
             list
           }}
 
@@ -64,27 +64,19 @@
         volumes_nogroup_mapped_to_host_cluster: >-
           {{
             volume_list_nogroup |
-            selectattr('volume_id', 'in', shared_hostmap_list | map(attribute='vdisk_id') | list) |
+            selectattr('volume_name', 'in', shared_hostmap_list | map(attribute='vdisk_name') | list) |
             list
           }}
-    - name: private_hostmap_list
-      debug:
-        var: private_hostmap_list
-    - name: shared_hostmap_list
-      debug:
-        var: shared_hostmap_list
-
 
     - name: Create volume to host map dictionary
       set_fact:
         volume_host_map: >-
           {{
             dict(
-              (private_hostmap_list | map(attribute='vdisk_id') | zip(private_hostmap_list | map(attribute='name'))) +
-              (shared_hostmap_list | map(attribute='vdisk_id') | zip(shared_hostmap_list | map(attribute='host_cluster_name')))
+              (private_hostmap_list | map(attribute='vdisk_name') | zip(private_hostmap_list | map(attribute='name'))) +
+              (shared_hostmap_list | map(attribute='vdisk_name') | zip(shared_hostmap_list | map(attribute='host_cluster_name')))
             )
           }}
-
 
     - name: volume_host_map
       debug:
@@ -95,18 +87,16 @@
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
         token: "{{ auth.token }}"
-        name: "{{ volume_host_map[item.volume_id] }}"
+        name: "{{ item.value }}"
         state: present
-      loop: "{{ volumes_nogroup_mapped_to_host }}"
-      when: volume_host_map[item.volume_id] is defined
+      loop: "{{ volume_host_map | dict2items }}"
 
     - name: Tell FlashSystem to add each volume to the corresponding volume group
       ibm_svc_manage_volume:
         clustername: "{{ clustername }}"
         domain: "{{ domain }}"
         token: "{{ auth.token }}"
-        name: "{{ item.volume_name }}"
-        volumegroup: "{{ volume_host_map[item.volume_id] }}"
+        name: "{{ item.key }}"
+        volumegroup: "{{ item.value }}"
         state: present
-      loop: "{{ volumes_nogroup_mapped_to_host }}"
-      when: volume_host_map[item.volume_id] is defined
+      loop: "{{ volume_host_map | dict2items }}"
