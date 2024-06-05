@@ -7,7 +7,7 @@
   # vars_files:
   #   - vault.yml
   vars:
-    clustername: fs5200
+    clustername: fs9200
     domain: esilabs.com
     username: rkoetter 
     password: ESI@2022bpic
